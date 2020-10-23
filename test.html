@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <script>
+            var db, res = 0;
+            var request = window.indexedDB.open("testDataBase", 3);
+
+            request.onerror = function (event) {
+            };
+
+            request.onsuccess = function (event) {
+                console.log("Database Success");
+                db = request.result;
+            };
+
+            request.onupgradeneeded = function (event) {
+                var db = event.target.result;
+                var objectStore = db.createObjectStore("testTable", { keyPath: "id" });
+            }
+
+            function read(id) {
+                var transaction = db.transaction(["testTable"]);
+                var objectStore = transaction.objectStore("testTable");
+                var request = objectStore.get(id);
+
+                request.onerror = function (event) {
+                    res = `Unable to get ${id}`;
+                };
+
+                request.onsuccess = function (event) {
+                    if (request.result) res = request.result.name;
+                    else res = `Unable to get ${id}`;
+                };
+            }
+
+            function add(id, name) {
+                var request = db.transaction(["testTable"], "readwrite")
+                    .objectStore("testTable")
+                    .add({ id: id, name: name });
+            }
+
+        </script>
+    </head>
+<body>Boi</body>
+</html>
